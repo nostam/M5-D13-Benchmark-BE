@@ -1,7 +1,6 @@
-const { write } = require("fs");
 const { readJson, writeJson } = require("fs-extra");
 const { join } = require("path");
-
+const express = require("express");
 const questionsPath = join(__dirname, "./services/questions/questions.json");
 const examsPath = join(__dirname, "./services/exams/exams.json");
 
@@ -27,7 +26,7 @@ const err = (msg, errCode = 500) => {
   e.message = msg;
   e.httpStatusCode = errCode;
   console.log(errCode, msg);
-  return next(e);
+  return e;
 };
 
 module.exports = {

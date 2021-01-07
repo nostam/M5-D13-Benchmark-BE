@@ -19,7 +19,8 @@ router.get("/:id", async (req, res, next) => {
   try {
     const exams = await getExams();
     const exam = exams.find((exam) => exam._id === req.params.id);
-    if (!exam && exam.isCompleted) err("Error: exam record not found", 404);
+    if (!exam && exam.isCompleted)
+      next(err("Error: exam record not found", 404));
     res.send(exam);
   } catch (error) {
     next(error);
@@ -36,17 +37,16 @@ router.post("/:id/answer", validateAns, async (req, res, next) => {
 
     const exams = await getExams();
     const exam = exams.find((exam) => exam._id === req.params.id);
-    if (!exam) err("Error: exam record not found", 404);
+    if (!exam) next(err("Error: exam record not found", 404));
 
     const timeDiff = (receivedTime - exam.examDate + buffer) / 1000;
     if (exam.isCompleted || timeDiff > exam.totalDuration)
-      err("Error: exam period has ended", 400);
+      next(err("Error: exam period has ended", 400));
 
     let score = 0;
     const ans = req.body;
-
-    if (exam.questions[ans.question].isSelected)
-      err("Error: Answer is already submitted", 400); // 500
+    if (!isNaN(exam.questions[ans.question].isSelected))
+      next(err("Error: Answer is submitted already", 400));
 
     exam.questions[ans.question].isSelected = ans.answer;
     exam.questions[ans.question].answers[ans.answer].isCorrect ? score++ : "";
@@ -64,6 +64,7 @@ router.post("/:id/answer", validateAns, async (req, res, next) => {
     await writeExams(updatedExams);
     res.status(201).send("ok");
   } catch (error) {
+    console.log(error);
     next(error);
   }
 });
@@ -71,7 +72,7 @@ router.post("/:id/answer", validateAns, async (req, res, next) => {
 router.post("/start", async (req, res, next) => {
   try {
     const questionsDB = await getQuestions();
-    if (!questionsDB) err("Error: Questions database");
+    if (!questionsDB) next(err("Error: Questions database"));
 
     const randomQuestions = [];
     for (let i = 0; i < 5; i++) {
@@ -80,11 +81,7 @@ router.post("/start", async (req, res, next) => {
       randomQuestions.push(questionsDB[luckyNbr]);
       questionsDB.splice(luckyNbr, 1);
     }
-    if (randomQuestions.length === 0) {
-      const error = new Error("Error: selected questions");
-      console.log(error);
-      return next(error);
-    }
+    if (randomQuestions.length === 0) next(err("Error: selected questions"));
     const examData = {
       _id: uniqid(),
       candidateName: req.body.name,
