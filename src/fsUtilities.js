@@ -1,6 +1,5 @@
 const { readJson, writeJson } = require("fs-extra");
 const { join } = require("path");
-const express = require("express");
 const questionsPath = join(__dirname, "./services/questions/questions.json");
 const examsPath = join(__dirname, "./services/exams/exams.json");
 

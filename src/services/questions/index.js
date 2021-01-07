@@ -15,7 +15,7 @@ const validateReq = [
 router.get("/", async (req, res, next) => {
   try {
     const questions = await getQuestions();
-    if (!questions) next(err("Error: questions DB error"));
+    if (!questions) return next(err("Error: questions DB error"));
     res.send(questions);
   } catch (error) {
     next(error);
@@ -27,7 +27,7 @@ router.post("/", validateReq, async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) return next(errors.array());
     const questions = await getQuestions();
-    if (!questions) next(err("Error: questions DB error"));
+    if (!questions) return next(err("Error: questions DB error"));
     questions.push(req.body);
     await writeQuestions(questions);
     res.status(201).send();
@@ -39,12 +39,12 @@ router.put("/:id", validateReq, async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) return next(errors.array());
     const questions = await getQuestions();
-    if (!questions) next(err("Error: questions DB error"));
+    if (!questions) return next(err("Error: questions DB error"));
     questions.map((question) =>
       question._id === req.params.id ? { ...question, ...req.body } : question
     );
     await writeQuestions(questions);
-    res.status(201).send();
+    res.status(202).send();
   } catch (error) {}
 });
 
@@ -53,12 +53,12 @@ router.delete("/:id", async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) return next(errors.array());
     const questions = await getQuestions();
-    if (!questions) next(err("Error: questions DB error"));
+    if (!questions) return next(err("Error: questions DB error"));
     const updatedDB = questions.filter(
       (question) => question._id !== req.params.id
     );
     await writeQuestions(updatedDB);
-    res.status(201).send();
+    res.status(204).send();
   } catch (error) {}
 });
 
