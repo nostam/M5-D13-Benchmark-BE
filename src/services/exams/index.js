@@ -68,22 +68,6 @@ router.post("/:id/answer", validateAns, async (req, res, next) => {
   }
 });
 
-// router.post("/:id/completed", async (req, res, next) => {
-//   try {
-//     const exams = await getExams();
-//     const exam = exams.find((exam) => exam._id === req.params.id);
-//     if (!exam) err("Error: exam record not found", 404);
-
-//     const updatedExams = exams.map((exam) =>
-//       exam._id === req.params.id ? { ...exam, isCompleted: true } : exam
-//     );
-//     await writeExams(updatedExams);
-//     res.status(201).send("ok");
-//   } catch (error) {
-//     next(error);
-//   }
-// });
-
 router.post("/start", async (req, res, next) => {
   try {
     const questionsDB = await getQuestions();
