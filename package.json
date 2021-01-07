@@ -1,0 +1,35 @@
+{
+  "name": "m5-d13-benchmark-be",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./src/server.js",
+    "dev": "nodemon --ignore 'src/*.json' -r dotenv/config ./src/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nostam/M5-D13-Benchmark-BE.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nostam/M5-D13-Benchmark-BE/issues"
+  },
+  "homepage": "https://github.com/nostam/M5-D13-Benchmark-BE#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-router": "0.0.1",
+    "express-validator": "^6.9.2",
+    "fs-extra": "^9.0.1",
+    "helmet": "^4.3.1",
+    "lodash": "^4.17.20",
+    "nodemon": "^2.0.7",
+    "path": "^0.12.7",
+    "uniqid": "^5.2.0"
+  }
+}
