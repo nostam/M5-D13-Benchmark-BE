@@ -11,8 +11,8 @@ const {
 } = require("../../fsUtilities");
 
 const validateAns = [
-  body("question").exists().isInt(),
-  body("answer").exists().isInt(),
+  body("question").notEmpty().isInt(),
+  body("answer").exists(),
 ];
 
 router.get("/:id", async (req, res, next) => {
@@ -28,34 +28,38 @@ router.get("/:id", async (req, res, next) => {
 
 router.post("/:id/answer", validateAns, async (req, res, next) => {
   try {
+    const receivedTime = new Date();
+    const buffer = 2000;
+
     const errors = validationResult(req);
     if (!errors.isEmpty()) return next(errors.array());
 
     const exams = await getExams();
     const exam = exams.find((exam) => exam._id === req.params.id);
     if (!exam) err("Error: exam record not found", 404);
-    if (exam.isCompleted) err("Error: exam period has ended", 400);
 
-    const score = 0;
-    const answers = req.body;
+    const timeDiff = (receivedTime - exam.examDate + buffer) / 1000;
+    if (exam.isCompleted || timeDiff > exam.totalDuration)
+      err("Error: exam period has ended", 400);
+
+    let score = 0;
+    const ans = req.body;
+
     if (exam.questions[ans.question].isSelected)
-      err("Error: Answer is already submitted");
-    answers.map((ans) => {
-      exam.questions[ans.question].isSelected = ans.answer;
-      exam.questions[ans.question].answers[ans.answer].isCorrect === true
-        ? score++
-        : "";
-    });
+      err("Error: Answer is already submitted", 400); // 500
+
+    exam.questions[ans.question].isSelected = ans.answer;
+    exam.questions[ans.question].answers[ans.answer].isCorrect ? score++ : "";
 
     const submittedAll =
-      exam.questions.filter((question) => question.isSelected).length ===
-      exams.questions.length;
+      exam.questions.map((question) => question.isSelected).length ===
+      exam.questions.length;
     console.log("exam completed", submittedAll);
 
-    const updatedExams = exams.map((exam) =>
-      exam._id === req.params.id
-        ? { ...exam, score: score, isCompleted: submittedAll }
-        : exam
+    const updatedExams = exams.map((entry) =>
+      entry._id === req.params.id
+        ? { ...entry, ...exam, totalScore: score, isCompleted: submittedAll }
+        : entry
     );
     await writeExams(updatedExams);
     res.status(201).send("ok");

@@ -3,7 +3,7 @@
     "_id": "4mnlirwkjmudi86",
     "candidateName": "etest",
     "examDate": "2021-01-07T12:43:40.805Z",
-    "isCompleted": false,
+    "isCompleted": true,
     "totalDuration": 600,
     "questions": [
       {
@@ -15,7 +15,8 @@
           { "text": "Lorem", "isCorrect": true },
           { "text": "adipisicing", "isCorrect": false },
           { "text": "proident", "isCorrect": false }
-        ]
+        ],
+        "isSelected": 0
       },
       {
         "duration": 60,
@@ -25,7 +26,8 @@
           { "text": "nisi", "isCorrect": true },
           { "text": "mollit", "isCorrect": false },
           { "text": "tempor", "isCorrect": false }
-        ]
+        ],
+        "isSelected": 1
       },
       {
         "duration": 120,
@@ -36,7 +38,8 @@
           { "text": "magna", "isCorrect": true },
           { "text": "sit", "isCorrect": false },
           { "text": "qui", "isCorrect": false }
-        ]
+        ],
+        "isSelected": 1
       },
       {
         "duration": 180,
@@ -46,7 +49,8 @@
           { "text": "et", "isCorrect": true },
           { "text": "sunt", "isCorrect": false },
           { "text": "mollit", "isCorrect": false }
-        ]
+        ],
+        "isSelected": 1
       },
       {
         "duration": 60,
@@ -56,9 +60,11 @@
           { "text": "aliquip", "isCorrect": true },
           { "text": "enim", "isCorrect": false },
           { "text": "cillum", "isCorrect": false }
-        ]
+        ],
+        "isSelected": 1
       }
-    ]
+    ],
+    "totalScore": 1
   },
   {
     "_id": "4mnlhhskjmv3s54",
