@@ -21,7 +21,7 @@ router.get("/:id", async (req, res, next) => {
     const exam = exams.find((exam) => exam._id === req.params.id);
     if (!exam && exam.isCompleted)
       return next(err("Error: exam record not found", 404));
-    res.send(exam);
+    res.status(200).send(exam);
   } catch (error) {
     next(error);
   }
@@ -30,14 +30,14 @@ router.get("/:id", async (req, res, next) => {
 router.post("/:id/answer", validateAns, async (req, res, next) => {
   try {
     const receivedTime = new Date();
-    const buffer = 2000;
+    const buffer = 200000;
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) return next(errors.array());
 
     const exams = await getExams();
     const exam = exams.find((exam) => exam._id === req.params.id);
-    if (exam) return next(err("Error: exam record not found", 404));
+    if (!exam) return next(err("Error: exam record not found", 404));
 
     const timeDiff = (receivedTime - exam.examDate + buffer) / 1000;
     if (exam.isCompleted || timeDiff > exam.totalDuration)
@@ -51,14 +51,14 @@ router.post("/:id/answer", validateAns, async (req, res, next) => {
     exam.questions[ans.question].isSelected = ans.answer;
     exam.questions[ans.question].answers[ans.answer].isCorrect ? score++ : "";
 
-    const submittedAll =
-      exam.questions.map((question) => question.isSelected).length ===
-      exam.questions.length;
-    console.log("exam completed", submittedAll);
+    const notComplete = exam.questions
+      .map((question) => question.isSelected)
+      .includes(undefined);
+    console.log("exam completed", !notComplete);
 
     const updatedExams = exams.map((entry) =>
       entry._id === req.params.id
-        ? { ...entry, ...exam, totalScore: score, isCompleted: submittedAll }
+        ? { ...entry, ...exam, totalScore: score, isCompleted: !notComplete }
         : entry
     );
     await writeExams(updatedExams);
@@ -83,6 +83,7 @@ router.post("/start", async (req, res, next) => {
     }
     if (randomQuestions.length === 0)
       return next(err("Error: selected questions"));
+
     const examData = {
       _id: uniqid(),
       candidateName: req.body.name,
